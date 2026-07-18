@@ -32,3 +32,49 @@ body{
 .card:hover{
     transform:translateY(-8px);
 }
+.card img{
+    height:250px;
+    object-fit:cover;
+}
+
+.card{
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.navbar{
+    padding:15px 0;
+}
+
+.navbar-brand{
+    font-size:1.8rem;
+}
+
+.nav-link{
+    margin-left:15px;
+}
+
+footer a{
+    transition:0.3s;
+}
+
+footer a:hover{
+    color:#198754 !important;
+    padding-left:5px;
+}
+
+footer p{
+    margin-bottom:8px;
+}
+
+.card-img-top{
+    height:250px;
+    object-fit:cover;
+}

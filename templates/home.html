@@ -1,9 +1,32 @@
 {% extends 'base.html' %}
 
-{% block title %}
-Home
-{% endblock %}
-
 {% block content %}
-<h1>Home Page</h1>
+
+<section class="container mt-5">
+
+    <div class="row align-items-center">
+
+        <div class="col-md-6">
+            <h1>Healthy Food, Healthy Life</h1>
+
+            <p>
+                Fresh Moringa products made with natural ingredients.
+            </p>
+
+            <a href="/menu/" class="btn btn-success">
+                Explore Menu
+            </a>
+        </div>
+
+        <div class="col-md-6 text-center">
+
+            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
+                 class="img-fluid rounded">
+
+        </div>
+
+    </div>
+
+</section>
+
 {% endblock %}

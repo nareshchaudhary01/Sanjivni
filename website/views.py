@@ -1,6 +1,7 @@
-from django.shortcuts import render,  get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from .models import Product
+from .models import Product, ContactMessage
+
 
 
 
@@ -27,6 +28,18 @@ def menu(request):
     return render(request, "menu.html", context)
 
 def contact(request):
+
+    if request.method == "POST":
+
+        ContactMessage.objects.create(
+            name=request.POST.get("name"),
+            email=request.POST.get("email"),
+            subject=request.POST.get("subject"),
+            message=request.POST.get("message"),
+        )
+
+        return redirect("contact")
+
     return render(request, "contact.html")
 
 def product_detail(request, slug):

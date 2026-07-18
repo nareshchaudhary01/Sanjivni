@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="container py-5">
+
+    <div class="row align-items-center">
+
+        <!-- Product Image -->
+        <div class="col-lg-6 mb-4">
+
+            <img src="{{ product.image.url }}"
+                 class="img-fluid rounded shadow"
+                 alt="{{ product.name }}">
+
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-lg-6">
+
+            <h1 class="fw-bold">
+                {{ product.name }}
+            </h1>
+
+            <h2 class="text-success my-3">
+                ₹{{ product.price }}
+            </h2>
+
+            <p class="lead">
+                {{ product.description }}
+            </p>
+
+            <hr>
+
+            {% if product.available %}
+
+                <span class="badge bg-success fs-6 mb-3">
+                    In Stock
+                </span>
+
+            {% else %}
+
+                <span class="badge bg-danger fs-6 mb-3">
+                    Out of Stock
+                </span>
+
+            {% endif %}
+
+            <br>
+
+            <a href="{% url 'menu' %}" class="btn btn-success btn-lg">
+                Back to Menu
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

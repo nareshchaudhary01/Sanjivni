@@ -2,7 +2,22 @@ from django.db import models
 
 
 class Product(models.Model):
+
+    CATEGORY_CHOICES = [
+    ("Powder", "Powder"),
+    ("Tea", "Tea"),
+    ("Capsules", "Capsules"),
+    ("Oil", "Oil"),
+    ]
+
     name = models.CharField(max_length=100)
+
+    category = models.CharField(
+    max_length=20,
+    choices=CATEGORY_CHOICES,
+    default="Powder"
+    )
+
     slug = models.SlugField(unique=True)
 
     description = models.TextField()

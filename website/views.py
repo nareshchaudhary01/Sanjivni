@@ -23,15 +23,20 @@ def about(request):
 def menu(request):
 
     query = request.GET.get("q")
+    category = request.GET.get("category")
 
     products = Product.objects.all()
 
     if query:
         products = products.filter(name__icontains=query)
 
+    if category:
+        products = products.filter(category=category)
+
     return render(request, "menu.html", {
         "products": products,
         "query": query,
+        "category": category,
     })
 
 def contact(request):

@@ -34,6 +34,42 @@
 
     </div>
 </div>
+<form method="GET" class="row g-3 mb-4">
+
+    <div class="col-md-6">
+        <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            class="form-control"
+            placeholder="Search products">
+    </div>
+
+    <div class="col-md-4">
+
+        <select name="category" class="form-select">
+
+            <option value="">All Categories</option>
+
+            <option value="Powder">Powder</option>
+
+            <option value="Tea">Tea</option>
+
+            <option value="Capsules">Capsules</option>
+
+            <option value="Oil">Oil</option>
+
+        </select>
+
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-success w-100">
+            Filter
+        </button>
+    </div>
+
+</form>
 
     <div class="row g-4">
 

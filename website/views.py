@@ -6,7 +6,7 @@ from .models import Order, OrderItem
 from django.contrib.auth import login
 from .forms import SignupForm
 from django.contrib.auth import logout
-
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -221,5 +221,18 @@ def user_logout(request):
     logout(request)
     return redirect("home")
 
+@login_required
+def my_orders(request):
 
+    orders = Order.objects.filter(
+        user=request.user
+    ).order_by("-created_at")
+
+    return render(
+        request,
+        "my_orders.html",
+        {
+            "orders": orders
+        }
+    )
 # Create your views here.

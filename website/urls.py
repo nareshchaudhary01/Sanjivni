@@ -33,6 +33,6 @@ urlpatterns = [
 
    path("logout/", views.user_logout, name="logout"),
 
-   
+   path("my-orders/", views.my_orders, name="my_orders"),
 ]
 

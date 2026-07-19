@@ -21,13 +21,18 @@ def about(request):
     return render(request, "about.html")
 
 def menu(request):
-    products = Product.objects.filter(available=True)
 
-    context = {
-        "products": products
-    }
+    query = request.GET.get("q")
 
-    return render(request, "menu.html", context)
+    products = Product.objects.all()
+
+    if query:
+        products = products.filter(name__icontains=query)
+
+    return render(request, "menu.html", {
+        "products": products,
+        "query": query,
+    })
 
 def contact(request):
 

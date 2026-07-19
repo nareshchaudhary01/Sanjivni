@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from .models import Product, ContactMessage, Cart, CartItem
 from .forms import CheckoutForm
 from .models import Order, OrderItem
+from django.contrib.auth import login
+from .forms import SignupForm
+from django.contrib.auth import logout
 
 
 
@@ -72,19 +75,15 @@ def product_detail(request, slug):
 
 
 def get_cart(request):
+
+    if not request.session.session_key:
+        request.session.create()
+
     session_key = request.session.session_key
 
-    if not session_key:
-        request.session.create()
-        session_key = request.session.session_key
-
     cart, created = Cart.objects.get_or_create(
-        id=request.session.get("cart_id")
-    ) if request.session.get("cart_id") else (None, True)
-
-    if cart is None:
-        cart = Cart.objects.create()
-        request.session["cart_id"] = cart.id
+        session_key=session_key
+    )
 
     return cart
 
@@ -158,6 +157,10 @@ def checkout(request):
 
             order = form.save(commit=False)
 
+            # Logged in user ko order se link karo
+            if request.user.is_authenticated:
+                order.user = request.user
+
             order.total = total
 
             order.save()
@@ -187,4 +190,36 @@ def checkout(request):
 
 def thank_you(request):
     return render(request, "thank_you.html")
+
+def signup(request):
+
+    if request.method == "POST":
+
+        form = SignupForm(request.POST)
+
+        if form.is_valid():
+
+            user = form.save()
+
+            login(request, user)
+
+            return redirect("home")
+
+    else:
+
+        form = SignupForm()
+
+    return render(
+        request,
+        "signup.html",
+        {
+            "form": form
+        }
+    )
+
+def user_logout(request):
+    logout(request)
+    return redirect("home")
+
+
 # Create your views here.

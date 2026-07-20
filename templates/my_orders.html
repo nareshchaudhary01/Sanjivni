@@ -4,49 +4,93 @@
 
 <div class="container py-5">
 
-    <h2 class="mb-4">
+    <h2 class="mb-4 fw-bold">
         My Orders
     </h2>
 
     {% if orders %}
 
-    <table class="table table-bordered">
+    {% for order in orders %}
 
-        <thead class="table-success">
+    <div class="card shadow-sm mb-4">
 
-            <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Total</th>
-            </tr>
+        <div class="card-header bg-success text-white">
 
-        </thead>
+            <div class="row align-items-center">
 
-        <tbody>
+                <div class="col-md-3">
+                    <strong>Order #{{ order.id }}</strong>
+                </div>
 
-        {% for order in orders %}
+                <div class="col-md-3">
+                    {{ order.created_at|date:"d M Y" }}
+                </div>
 
-            <tr>
+                <div class="col-md-3">
+                    ₹{{ order.total }}
+                </div>
 
-                <td>#{{ order.id }}</td>
+                <div class="col-md-3">
+                    <!-- Dynamic Status Badge -->
+                    <span class="badge 
+                        {% if order.status == 'Pending' %}bg-warning text-dark
+                        {% elif order.status == 'Processing' %}bg-info text-dark
+                        {% elif order.status == 'Shipped' %}bg-primary
+                        {% elif order.status == 'Delivered' %}bg-success
+                        {% else %}bg-secondary{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
 
-                <td>{{ order.created_at }}</td>
+            </div>
 
-                <td>₹{{ order.total }}</td>
+        </div>
 
-            </tr>
+        <div class="card-body">
 
-        {% endfor %}
+            <table class="table">
 
-        </tbody>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
 
-    </table>
+                <tbody>
+
+                {% for item in order.items.all %}
+
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>₹{{ item.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>₹{{ item.subtotal }}</td>
+                    </tr>
+
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-muted">No items in this order.</td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
 
     {% else %}
 
-        <div class="alert alert-info">
-            You have not placed any orders yet.
-        </div>
+    <div class="alert alert-info">
+        You have not placed any orders yet.
+    </div>
 
     {% endif %}
 

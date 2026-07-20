@@ -16,45 +16,52 @@
 
         <div class="card-header bg-success text-white">
 
-            <div class="row align-items-center">
+    <div class="row align-items-center">
 
-                <div class="col-md-3">
-                    <strong>Order #{{ order.id }}</strong>
-                </div>
+        <!-- Order ID -->
+        <div class="col-md-3 fw-bold">
+            Order #{{ order.id }}
+        </div>
 
-                <div class="col-md-3">
-                    {{ order.created_at|date:"d M Y" }}
-                </div>
+        <!-- Date -->
+        <div class="col-md-3">
+            {{ order.created_at|date:"d M Y" }}
+        </div>
 
-                <div class="col-md-3">
-                    ₹{{ order.total }}
-                </div>
+        <!-- Total Price -->
+        <div class="col-md-3 fw-bold">
+            ₹{{ order.total }}
+        </div>
 
-                <div class="col-md-2">
-                    <!-- Dynamic Status Badge -->
-                    <span class="badge 
-                        {% if order.status == 'Pending' %}bg-warning text-dark
-                        {% elif order.status == 'Processing' %}bg-info text-dark
-                        {% elif order.status == 'Shipped' %}bg-primary
-                        {% elif order.status == 'Delivered' %}bg-success
-                        {% elif order.status == 'Cancelled' %}bg-danger
-                        {% else %}bg-secondary{% endif %}">
-                        {{ order.get_status_display }}
-                    </span>
-                </div>
-                <div class="col-md-3 text-end">
-                    {% if order.status == 'Pending' or order.status == 'Processing' %}
-                        <a href="{% url 'cancel_order' order.id %}" 
-                        class="btn btn-sm btn-danger fw-bold shadow-sm"
-                        onclick="return confirm('Are you sure you want to cancel Order #{{ order.id }}?');">
-                            Cancel Order
-                        </a>
-                    {% endif %}
-                </div>
+        <!-- Status & Cancel Button Side by Side -->
+        <div class="col-md-3 text-end d-flex align-items-center justify-content-end gap-2">
+            
+            <!-- Dynamic Status Badge -->
+            <span class="badge 
+                {% if order.status == 'Pending' %}bg-warning text-dark
+                {% elif order.status == 'Processing' %}bg-info text-dark
+                {% elif order.status == 'Shipped' %}bg-primary
+                {% elif order.status == 'Delivered' %}bg-success
+                {% elif order.status == 'Cancelled' %}bg-danger
+                {% else %}bg-secondary{% endif %}">
+                {{ order.get_status_display }}
+            </span>
 
-            </div>
+            <!-- Small Side Cancel Button -->
+            {% if order.status == 'Pending' or order.status == 'Processing' %}
+                <a href="{% url 'cancel_order' order.id %}" 
+                   class="btn btn-danger btn-sm py-0 px-2 fs-7 shadow-sm"
+                   style="font-size: 0.8rem; line-height: 1.5;"
+                   onclick="return confirm('Are you sure you want to cancel Order #{{ order.id }}?');">
+                    Cancel
+                </a>
+            {% endif %}
 
         </div>
+
+    </div>
+
+</div>
 
         <div class="card-body">
 

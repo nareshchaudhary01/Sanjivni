@@ -249,14 +249,17 @@ def cancel_order(request, order_id):
         order.save()
         
         # EMAIL BHEJNE KA CODE
-        send_mail(
-            subject=f'Alert: Order #{order.id} Cancelled!',
-            message=f'User {order.name} has cancelled Order #{order.id}. Total amount: {order.total}',
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=['apka_email@gmail.com'], # Yahan apna email dalo
-            fail_silently=False,
+        try:
+            send_mail(
+                subject=f'Alert: Order #{order.id} Cancelled!',
+                message=f'User {order.name} has cancelled Order #{order.id}. Total amount: {order.total}',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=['apka_email@gmail.com'], # Yahan apna email dalo
+                fail_silently=True,
         )
-        
+        except Exception:
+            pass
+
         messages.success(request, f"Order #{order.id} has been cancelled successfully.")
     else:
         messages.error(request, "Cannot cancel this order.")

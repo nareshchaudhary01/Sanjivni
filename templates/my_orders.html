@@ -14,29 +14,39 @@
 
     <div class="card shadow-sm mb-4">
 
-        <div class="card-header bg-success text-white">
+    <div class="card-header bg-success text-white">
 
     <div class="row align-items-center">
 
-        <!-- Order ID -->
-        <div class="col-md-3 fw-bold">
+        <!-- 1. Order ID -->
+        <div class="col-md-2 fw-bold">
             Order #{{ order.id }}
         </div>
 
-        <!-- Date -->
-        <div class="col-md-3">
+        <!-- 2. Date -->
+        <div class="col-md-3 text-start">
             {{ order.created_at|date:"d M Y" }}
         </div>
 
-        <!-- Total Price -->
-        <div class="col-md-3 fw-bold">
+        <!-- 3. Total Price -->
+        <div class="col-md-2 fw-bold">
             ₹{{ order.total }}
         </div>
 
-        <!-- Status & Cancel Button Side by Side -->
-        <div class="col-md-3 text-end d-flex align-items-center justify-content-end gap-2">
-            
-            <!-- Dynamic Status Badge -->
+        <!-- 4. Cancel Button (Keval Pending/Processing Orders ke liye) -->
+        <div class="col-md-3 text-end">
+            {% if order.status == 'Pending' or order.status == 'Processing' %}
+                <a href="{% url 'cancel_order' order.id %}" 
+                   class="btn btn-danger btn-sm py-0 px-2 fw-bold"
+                   style="font-size: 0.8rem;"
+                   onclick="return confirm('Are you sure you want to cancel Order #{{ order.id }}?');">
+                    Cancel Order
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- 5. Status Badge -->
+        <div class="col-md-2 text-end">
             <span class="badge 
                 {% if order.status == 'Pending' %}bg-warning text-dark
                 {% elif order.status == 'Processing' %}bg-info text-dark
@@ -46,17 +56,6 @@
                 {% else %}bg-secondary{% endif %}">
                 {{ order.get_status_display }}
             </span>
-
-            <!-- Small Side Cancel Button -->
-            {% if order.status == 'Pending' or order.status == 'Processing' %}
-                <a href="{% url 'cancel_order' order.id %}" 
-                   class="btn btn-danger btn-sm py-0 px-2 fs-7 shadow-sm"
-                   style="font-size: 0.8rem; line-height: 1.5;"
-                   onclick="return confirm('Are you sure you want to cancel Order #{{ order.id }}?');">
-                    Cancel
-                </a>
-            {% endif %}
-
         </div>
 
     </div>

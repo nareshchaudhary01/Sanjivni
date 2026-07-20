@@ -76,6 +76,9 @@ class Cart(models.Model):
     def __str__(self):
         return self.session_key
 
+    def get_total_price(self):
+        return sum(item.product.price * item.quantity for item in self.items.all())
+
 
 class CartItem(models.Model):
 
@@ -114,6 +117,18 @@ class Order(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     address = models.TextField()
+
+
+    PAYMENT_CHOICES = [
+        ('COD', 'Cash on Delivery'),
+        ('ONLINE', 'Online Payment (Pay Now)'),
+    ]
+
+    payment_method = models.CharField(
+        max_length=10, 
+        choices=PAYMENT_CHOICES, 
+        default='COD'
+    )
 
     STATUS_CHOICES = [
     ("Pending", "Pending"),

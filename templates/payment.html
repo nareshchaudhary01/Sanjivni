@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h3 class="fw-bold mb-3">Complete Payment</h3>
+                <p class="text-muted">Order ID: <strong>#{{ order.id }}</strong></p>
+                <h2 class="text-success my-3">₹{{ amount }}</h2>
+
+                <!-- Hidden form for payment success callback -->
+                <form id="razorpay-form" action="{% url 'payment_success' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+                    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+                    <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                </form>
+
+                <button id="rzp-button" class="btn btn-success btn-lg w-100 mt-3 fw-bold">
+                    Pay Now
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "{{ razorpay_key_id }}",
+    "amount": "{{ amount_in_paise }}",
+    "currency": "INR",
+    "name": "The Moringa Co.",
+    "description": "Order #{{ order.id }} Payment",
+    "order_id": "{{ razorpay_order_id }}",
+    "handler": function (response){
+        document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+        document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+        document.getElementById('razorpay_signature').value = response.razorpay_signature;
+        document.getElementById('razorpay-form').submit();
+    },
+    "prefill": {
+        "name": "{{ order.name }}",
+        "email": "{{ order.email }}",
+        "contact": "{{ order.phone }}"
+    },
+    "theme": {
+        "color": "#198754"
+    }
+};
+
+var rzp = new Razorpay(options);
+document.getElementById('rzp-button').onclick = function(e){
+    rzp.open();
+    e.preventDefault();
+}
+</script>
+{% endblock %}

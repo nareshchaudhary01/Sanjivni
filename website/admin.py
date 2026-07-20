@@ -73,10 +73,33 @@ class CartItemAdmin(admin.ModelAdmin):
 
 
 # 4. Order & OrderItem Admin
-admin.site.register(OrderItem)  # OrderItem simple register kar diya
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    readonly_fields = ('product', 'price', 'quantity')
+
+
+admin.site.register(OrderItem)
+
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'status', 'total', 'created_at')
-    list_filter = ('status', 'created_at')
+    # Table list me payment_method aur custom badge dono dikhenge
+    list_display = (
+        'id', 
+        'name', 
+        'total', 
+        'get_payment_method',  # COD / Online yahan dikhega
+        'status', 
+        'created_at'
+    )
+    list_filter = ('status', 'payment_method', 'created_at') # Filter me payment_method add kiya
     search_fields = ('name', 'email', 'id')
+    inlines = [OrderItemInline] # Order ke andar hi purchased products dikhenge
+
+    # Payment Method ko Admin me clean text/emoji me dikhane ke liye
+    @admin.display(description='Payment Method')
+    def get_payment_method(self, obj):
+        if getattr(obj, 'payment_method', '') == 'ONLINE':
+            return '💳 Online (Pay Now)'
+        return '💵 Cash on Delivery (COD)'

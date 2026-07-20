@@ -10,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
+import razorpay
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -144,53 +146,62 @@ def remove_from_cart(request, item_id):
     item.delete()
     return redirect("cart")
 
+@login_required
 def checkout(request):
+    # Cart ko session_key ya ID se fetch karo (User field cart me nahi hai)
+    cart_id = request.session.get('cart_id')
+    if cart_id:
+        cart = get_object_or_404(Cart, id=cart_id)
+    else:
+        cart = Cart.objects.filter(session_key=request.session.session_key).first()
 
-    cart = get_cart(request)
-
-    items = cart.items.all()
-
-    total = sum(item.total_price for item in items)
+    if not cart or not cart.items.exists():
+        messages.error(request, "Your cart is empty!")
+        return redirect('cart')
 
     if request.method == "POST":
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+        payment_method = request.POST.get('payment_method')
 
-        form = CheckoutForm(request.POST)
+        if not payment_method:
+            messages.error(request, "Please select a payment method!")
+            return redirect('checkout')
 
-        if form.is_valid():
+        # Order create karo
+        order = Order.objects.create(
+            user=request.user,
+            name=name,
+            email=email,
+            phone=phone,
+            address=address,
+            total=cart.get_total_price(),
+            payment_method=payment_method,
+            status="Pending"
+        )
 
-            order = form.save(commit=False)
+        # Cart items ko Order items me copy karo
+        for item in cart.items.all():
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                price=item.product.price,
+                quantity=item.quantity
+            )
+        
+        # Cart khali karo
+        cart.items.all().delete()
 
-            # Logged in user ko order se link karo
-            if request.user.is_authenticated:
-                order.user = request.user
+        # Payment Method Redirection Logic
+        if payment_method == 'ONLINE':
+            return redirect('payment_page', order_id=order.id)
+        else:
+            messages.success(request, f"Order #{order.id} placed successfully with Cash on Delivery!")
+            return redirect('my_orders')
 
-            order.total = total
-
-            order.save()
-
-            for item in items:
-
-                OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    quantity=item.quantity,
-                    price=item.product.price,
-                )
-
-            items.delete()
-
-            return redirect("thank_you")
-
-    else:
-
-        form = CheckoutForm()
-
-    return render(request, "checkout.html", {
-        "form": form,
-        "items": items,
-        "total": total,
-    })
-
+    return render(request, 'checkout.html', {'cart': cart})
 def thank_you(request):
     return render(request, "thank_you.html")
 
@@ -265,4 +276,66 @@ def cancel_order(request, order_id):
         messages.error(request, "Cannot cancel this order.")
 
     return redirect('my_orders')
+
+
+# 1. Initiate Payment View
+def payment_page(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # Razorpay Client Init
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    
+    # Amount in paise (e.g. ₹199 = 19900 paise)
+    amount_in_paise = int(order.total * 100)
+    
+    # Create Razorpay Order
+    razorpay_order = client.order.create({
+        "amount": amount_in_paise,
+        "currency": "INR",
+        "payment_capture": "1"
+    })
+    
+    context = {
+        'order': order,
+        'razorpay_order_id': razorpay_order['id'],
+        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+        'amount': order.total,
+        'amount_in_paise': amount_in_paise,
+    }
+    return render(request, 'payment.html', context)
+
+@csrf_exempt
+def payment_success(request):
+    if request.method == "POST":
+        payment_id = request.POST.get('razorpay_payment_id', '')
+        razorpay_order_id = request.POST.get('razorpay_order_id', '')
+        signature = request.POST.get('razorpay_signature', '')
+        order_id = request.POST.get('order_id', '')
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': payment_id,
+            'razorpay_signature': signature
+        }
+
+        try:
+            # Verify payment signature
+            client.utility.verify_payment_signature(params_dict)
+            
+            # Update order status to Processing/Paid
+            order = Order.objects.get(id=order_id)
+            order.status = "Processing"
+            order.save()
+
+            messages.success(request, f"Payment successful! Order #{order.id} is now being processed.")
+            return redirect('my_orders')
+
+        except Exception as e:
+            messages.error(request, "Payment verification failed. Please try again.")
+            return redirect('my_orders')
+
+    return redirect('my_orders')
+
 # Create your views here.

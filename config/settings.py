@@ -132,3 +132,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+
+# Razorpay Test Credentials
+RAZORPAY_KEY_ID = 'rzp_test_TFdy1jWWcvGAXV'  # Apna complete Key ID yahan paste karo
+RAZORPAY_KEY_SECRET = 'Fu5XLjNSMzMTea4bsp1A2HwO' # Apna complete Key Secret yahan paste karo

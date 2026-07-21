@@ -146,7 +146,7 @@ def remove_from_cart(request, item_id):
     item.delete()
     return redirect("cart")
 
-@login_required
+@login_required(login_url="login")
 def checkout(request):
     # Cart ko session_key ya ID se fetch karo (User field cart me nahi hai)
     cart_id = request.session.get('cart_id')

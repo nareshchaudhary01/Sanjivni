@@ -25,9 +25,11 @@ SECRET_KEY = 'django-insecure-afhb#xg4a2%=162761^dvv5k&$_aokr8^v1*+n#17_f1-&pi+(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://frugally-antitrust-pedometer.ngrok-free.dev",
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -129,7 +131,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
+LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 

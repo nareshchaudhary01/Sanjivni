@@ -24,22 +24,34 @@
 
         <tr>
 
-            <td>{{ item.product.name }}</td>
+            <td class="fw-semibold">
+                {{ item.product.name }}
+            </td>
 
             <td>₹{{ item.product.price }}</td>
 
             <td>
+            <div class="d-flex justify-content-center">
 
-                <a href="{% url 'decrease_quantity' item.id %}"
-                   class="btn btn-danger btn-sm">-</a>
+                <div class="border rounded-pill px-2 py-1 d-flex align-items-center">
 
-                <strong class="mx-3">
-                    {{ item.quantity }}
-                </strong>
+                    <a href="{% url 'decrease_quantity' item.id %}"
+                    class="btn btn-sm btn-light border-0">
+                        <strong>−</strong>
+                    </a>
 
-                <a href="{% url 'increase_quantity' item.id %}"
-                   class="btn btn-success btn-sm">+</a>
+                    <span class="px-3 fw-bold">
+                        {{ item.quantity }}
+                    </span>
 
+                    <a href="{% url 'increase_quantity' item.id %}"
+                    class="btn btn-sm btn-light border-0">
+                        <strong>+</strong>
+                    </a>
+
+                </div>
+
+            </div>
             </td>
 
             <td>₹{{ item.total_price }}</td>
@@ -47,8 +59,8 @@
             <td>
 
                 <a href="{% url 'remove_from_cart' item.id %}"
-                   class="btn btn-outline-danger btn-sm">
-                    Remove
+                class="btn btn-outline-danger btn-sm">
+                🗑 Remove
                 </a>
 
             </td>

@@ -52,6 +52,8 @@ class ContactMessage(models.Model):
 
     email = models.EmailField()
 
+    phone = models.CharField(max_length=15)
+
     subject = models.CharField(max_length=200)
 
     message = models.TextField()

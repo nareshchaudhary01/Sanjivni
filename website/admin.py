@@ -28,6 +28,7 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "email",
+        "phone",
         "subject",
         "created_at",
     )

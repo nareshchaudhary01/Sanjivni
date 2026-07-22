@@ -54,6 +54,7 @@ def contact(request):
         ContactMessage.objects.create(
             name=request.POST.get("name"),
             email=request.POST.get("email"),
+            phone=request.POST.get("phone"),
             subject=request.POST.get("subject"),
             message=request.POST.get("message"),
         )

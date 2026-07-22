@@ -330,7 +330,7 @@ def payment_success(request):
             order.save()
 
             messages.success(request, f"Payment successful! Order #{order.id} is now being processed.")
-            return redirect('my_orders')
+            return redirect('thank_you')
 
         except Exception as e:
             messages.error(request, "Payment verification failed. Please try again.")
